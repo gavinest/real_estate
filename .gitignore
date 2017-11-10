@@ -1,0 +1,8 @@
+#directories to ignore
+/database/denver_open_data/
+
+#file types to ignore
+*.csv
+*.xlsx
+*.xls
+*.pkl
