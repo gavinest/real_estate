@@ -1,6 +1,3 @@
-CREATE DATABASE re;
-\c re;
-
 CREATE EXTENSION pgcrypto;
 
 CREATE TABLE locations (
