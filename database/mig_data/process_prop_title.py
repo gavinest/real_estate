@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 import json
 
-from database_connection import databaseConnection
-
 def load_data():
     with open('scrape_data/20171026_den_tax_scrape/prop_title.txt', 'r') as f:
         data = []
