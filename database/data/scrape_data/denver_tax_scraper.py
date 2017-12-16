@@ -17,7 +17,7 @@ class denverTax(object):
         self._chain_of_title()
         self._taxes()
         self._comps()
-        self._save_data()
+        # self._save_data()
 
     def _summary_info(self):
         endpoint = 'summary/'
@@ -39,10 +39,25 @@ class denverTax(object):
 
             general = soup.select('table#property-info-bar')[0]
             titles = [title.text.encode('utf-8') for title in general.find_all('th') if title.text]
+            titles.pop(0)
             titles = OrderedDict(zip(titles, range(len(titles))))
+
+            owner_cell_labels = ['owner1', 'owner2', 'address', 'city/state/zip']
+            owner_cell = [' '.join(_.text.strip().split()) for _ in general.find_all('td')[0].find_all('div')]
+            prop_general = dict(zip(owner_cell_labels, owner_cell))
+            csz = prop_general.pop('city/state/zip')
+            city, _, state, zipcode = csz.split(' ')
+            # zipcode = csz.split(' ')[0]
+            # city, state = csz.split(' , ')[:2]
+            prop_general['zip'] = zipcode
+            prop_general['city'] = city
+            prop_general['state'] = state
+
             cells = [' '.join(cell.text.encode('utf-8').strip().split()) for cell in general.find_all('td')]
+            cells.pop(0)
             cells.pop(1)
-            self.prop_general = dict(zip(titles.keys(), cells))
+            prop_general.update(dict(zip(titles.keys(), cells)))
+            self.prop_general = prop_general
             self.prop_general['pin'] = self.pin
 
     def _assessment_info(self):
@@ -125,7 +140,7 @@ class denverTax(object):
     def _save_data(self):
         with open('prop_general.txt', 'a') as f:
             entry = json.dumps(ast.literal_eval(str(self.prop_general)))
-            f.write(entry + '\n')            
+            f.write(entry + '\n')
         with open('prop_assessment.txt', 'a') as f:
             entry = json.dumps(ast.literal_eval(str(self.prop_assessment)))
             f.write(entry + '\n')
@@ -145,6 +160,7 @@ class denverTax(object):
 
 
 if __name__ == '__main__':
-    pin = '161355168'
+    # pin = '161355168'
     # pin = '164177451'
+    pin = '160434078'
     d = denverTax(pin)
